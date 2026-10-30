@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ORBITAL Autonomy Lab — Mission Simulator</title>
+<style>
+:root{color-scheme:dark;--bg:#080d13;--panel:#101923;--panel2:#0c141d;--edge:#243441;--text:#eaf2f4;--muted:#91a4ad;--mint:#8df0ce;--blue:#79c9ff;--gold:#f4c978;--red:#ff7f87;--purple:#c0a8ff}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -20%,#203a43 0,transparent 55%),var(--bg);color:var(--text);font:13px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,select,input{font:inherit}button,select{background:#15232e;color:var(--text);border:1px solid #344956;border-radius:8px;padding:9px 12px;cursor:pointer}button:hover,select:hover{border-color:var(--mint)}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--mint);outline-offset:2px}button.primary{background:var(--mint);border-color:var(--mint);color:#072019;font-weight:800}button.soft{background:#172b35}button.warn{color:#ffb6b9;border-color:#70414a;background:#2a1b22}button:disabled{opacity:.4;cursor:not-allowed}
+header{height:auto;min-height:76px;padding:16px clamp(14px,3vw,36px);display:flex;justify-content:space-between;align-items:center;gap:18px;border-bottom:1px solid var(--edge);background:#080e14cc;position:sticky;top:0;z-index:5;backdrop-filter:blur(16px)}.brand{display:flex;align-items:center;gap:12px}.logo{width:38px;height:38px;border:1px solid #50716f;border-radius:12px;display:grid;place-items:center;color:var(--mint);font-size:20px;background:linear-gradient(145deg,#1d3b3c,#101b26)}.brand h1{font-size:15px;letter-spacing:.18em;margin:0}.brand p{font-size:10px;letter-spacing:.12em;color:var(--muted);margin:3px 0 0}.topright{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.live{font-size:10px;color:var(--mint);border:1px solid #315a50;border-radius:99px;padding:6px 10px;letter-spacing:.1em}.live i{display:inline-block;width:6px;height:6px;background:var(--mint);border-radius:50%;margin-right:6px;box-shadow:0 0 10px var(--mint)}
+main{max-width:1600px;margin:auto;padding:18px clamp(10px,2vw,28px) 30px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:10px 2px 18px;flex-wrap:wrap}.eyebrow{color:var(--mint);font-size:10px;letter-spacing:.18em;text-transform:uppercase}.hero h2{font-size:clamp(24px,3vw,38px);letter-spacing:-.04em;line-height:1.1;margin:7px 0}.hero p{margin:0;color:var(--muted);max-width:680px}.hero-meta{display:flex;gap:8px;flex-wrap:wrap}.chip{border:1px solid var(--edge);color:#c4d3d8;background:#0d171f;border-radius:7px;padding:7px 10px;font-size:10px}
+.layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(320px,.9fr);gap:14px;align-items:start}.stack{display:grid;gap:14px}.panel{background:linear-gradient(155deg,#111c27,#0c141c);border:1px solid var(--edge);border-radius:14px;overflow:hidden;min-width:0;box-shadow:0 14px 40px #0002}.panelhead{padding:13px 15px;border-bottom:1px solid var(--edge);display:flex;align-items:center;justify-content:space-between;gap:12px}.panelhead h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;margin:0}.small{font-size:10px;color:var(--muted)}.maphead{display:flex;gap:10px;align-items:center}.mapbox{position:relative;background:#0b131b}.mapbox canvas{display:block;width:100%;height:auto;aspect-ratio:1.35/1}.mapoverlay{position:absolute;left:14px;top:13px;display:flex;gap:7px;flex-wrap:wrap;pointer-events:none}.maptag{background:#08121bcf;border:1px solid #314550;border-radius:6px;padding:5px 8px;font-size:9px;color:#c3d4d8;backdrop-filter:blur(8px)}.mapfoot{padding:10px 14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--edge);color:var(--muted);font-size:10px}.legend{display:flex;gap:12px;flex-wrap:wrap}.legend span{white-space:nowrap}.swatch{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:5px}
+.missiongrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:12px}.mission{border:1px solid #2a3a46;background:#0d1720;border-radius:10px;padding:12px;text-align:left;min-height:104px;display:flex;flex-direction:column;gap:6px}.mission.active{border-color:var(--mint);background:linear-gradient(145deg,#18332f,#0d1c23);box-shadow:inset 0 0 0 1px #8df0ce20}.mission .icon{font-size:18px}.mission strong{font-size:12px}.mission small{font-size:10px;color:var(--muted);line-height:1.4}.mission .tag{align-self:flex-start;font-size:9px;color:var(--mint);letter-spacing:.08em;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px}.stat{padding:11px;border:1px solid #233440;border-radius:9px;background:#0b141c;min-width:0}.stat .n{font-size:clamp(17px,2vw,23px);font-weight:750;letter-spacing:-.04em}.stat .l{font-size:9px;letter-spacing:.1em;color:var(--muted);margin-top:3px}.stat .trend{font-size:9px;color:var(--mint);margin-top:5px}
+.roverlist{padding:10px;display:grid;gap:8px}.rover{border:1px solid #273945;background:#0b141c;border-radius:10px;padding:11px}.rovertop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.rname{font-size:12px;font-weight:800;letter-spacing:.06em}.badge{border-radius:5px;background:#18352f;color:var(--mint);font-size:9px;padding:4px 6px;text-transform:uppercase}.badge.warn{background:#382d1d;color:var(--gold)}.badge.bad{background:#3b2027;color:var(--red)}.roverbody{display:grid;grid-template-columns:1fr 1.2fr;gap:12px}.rovervisual{border:1px solid #233540;border-radius:8px;display:grid;place-items:center;min-height:90px;background:radial-gradient(circle,#1b3539,#0a121a 68%);position:relative;overflow:hidden}.rovervisual:after{content:"";position:absolute;width:130px;height:1px;background:#8df0ce30;transform:rotate(-25deg)}.bot{width:45px;height:29px;border:2px solid var(--mint);border-radius:8px;position:relative;background:#152a31;box-shadow:0 0 18px #8df0ce20}.bot:before,.bot:after{content:"";position:absolute;top:7px;width:8px;height:12px;border:2px solid #76989b;border-radius:3px}.bot:before{left:-9px}.bot:after{right:-9px}.eye{position:absolute;top:7px;left:16px;width:9px;height:9px;border-radius:50%;background:var(--mint);box-shadow:0 0 9px var(--mint)}.roverread{display:grid;gap:5px;align-content:start}.barrow{display:grid;grid-template-columns:58px 1fr 31px;align-items:center;gap:6px;font-size:9px;color:var(--muted)}.bar{height:5px;background:#22313a;border-radius:9px;overflow:hidden}.bar i{height:100%;display:block;border-radius:9px;background:var(--mint)}.roverdecision{font-size:10px;color:#c7d7db;line-height:1.4;margin-top:8px;padding-top:7px;border-top:1px solid #20303a}.roverdecision b{color:var(--gold);font-weight:650}
+.controls{padding:12px;display:grid;gap:12px}.controlrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.controlrow button{flex:1}.field{display:grid;gap:7px}.field label{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:10px}.field output{color:var(--mint)}input[type=range]{width:100%;accent-color:var(--mint)}.controlgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.selectwide{width:100%}
+.learning{padding:12px;display:grid;gap:12px}.learnheadline{display:flex;justify-content:space-between;align-items:center;gap:10px}.learnheadline strong{font-size:12px}.learnheadline span{font-size:10px;color:var(--mint)}.learnbar{height:8px;border-radius:10px;background:#22323a;overflow:hidden}.learnbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4dbaa1,#b2f5d7);transition:width .3s}.learnstats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.learnstat{background:#0a131b;border:1px solid #23333d;border-radius:8px;padding:9px}.learnstat strong{font-size:16px;display:block}.learnstat small{font-size:9px;color:var(--muted)}.explain{font-size:10px;color:var(--muted);line-height:1.6}.log{padding:10px 13px;height:210px;overflow:auto;display:flex;flex-direction:column;gap:9px}.logitem{font-size:10px;line-height:1.5;color:#c5d5d9;border-left:2px solid #42665f;padding-left:9px}.logitem .time{color:var(--mint);margin-right:6px}.logitem.warn{border-color:var(--gold)}.logitem.danger{border-color:var(--red)}.bottomgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}.footer{padding:18px 3px 0;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:#647982;font-size:10px}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.rightstack{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}.bottomgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){header{position:static}.topright{width:100%;justify-content:space-between}.hero{align-items:start}.rightstack,.bottomgrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.missiongrid{grid-template-columns:1fr 1fr}.roverbody{grid-template-columns:90px 1fr}.mapbox canvas{aspect-ratio:1/1}.controlgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand"><div class="logo">⌁</div><div><h1>ORBITAL / AUTONOMY LAB</h1><p>ROBOTIC EXPLORATION SYSTEMS · SIMULATION ENVIRONMENT</p></div></div>
+ <div class="topright"><span class="live"><i></i> SIMULATION ONLINE</span><span class="chip" id="missionClock">MISSION ELAPSED 00:00</span><button id="reset" class="soft">↻ Reset mission</button></div>
+</header>
+<main>
+ <div class="hero"><div><div class="eyebrow">Field operations / autonomous systems</div><h2>Let the robots figure it out.</h2><p>Choose an extreme-world mission, then watch a small robotic team sense, plan, learn from mistakes, and adapt without continuous human commands.</p></div><div class="hero-meta"><span class="chip" id="worldChip">WORLD · MARS</span><span class="chip">4 AUTONOMOUS UNITS</span><span class="chip">ONLINE LEARNING · ON</span></div></div>
+ <div class="layout">
+  <div class="stack">
+   <section class="panel">
+    <div class="panelhead"><h3>01 / Live planetary field</h3><div class="maphead"><span class="small" id="mapLabel">JEZERO OUTSKIRTS · TOPOGRAPHIC VIEW</span><button id="mapToggle" title="Toggle sensor overlay">Sensor overlay</button></div></div>
+    <div class="mapbox"><canvas id="map" width="1000" height="740" aria-label="Procedural planetary terrain and autonomous rover fleet"></canvas><div class="mapoverlay"><span class="maptag" id="weatherTag">THIN ATMOSPHERE · DUST HAZE</span><span class="maptag" id="phaseTag">LOCAL TIME 14:20</span><span class="maptag" id="linkTag">RELAY LINK · DELAYED</span></div></div>
+    <div class="mapfoot"><div class="legend"><span><i class="swatch" style="background:#8df0ce"></i>Robots</span><span><i class="swatch" style="background:#9ee8ff"></i>Target / science</span><span><i class="swatch" style="background:#ff7f87"></i>Hazard</span><span><i class="swatch" style="background:#f4c978"></i>Resource / ridge</span><span><i class="swatch" style="background:#6e8b92"></i>Trail</span></div><span id="mapStatus">MAP CONFIDENCE 61%</span></div>
+   </section>
+   <section class="panel"><div class="panelhead"><h3>02 / Select a mission</h3><span class="small">OBJECTIVE CHANGES THE WORLD + POLICY</span></div>
+    <div class="missiongrid" id="missions">
+     <button class="mission active" data-mission="ice"><span class="icon">❄</span><strong>Find subsurface ice</strong><small>Map a polar crater, identify likely ice, and return a sample before power runs low.</small><span class="tag">LUNAR · SCIENCE</span></button>
+     <button class="mission" data-mission="storm"><span class="icon">◌</span><strong>Survive a dust storm</strong><small>Keep a Mars outpost alive while visibility drops and solar power collapses.</small><span class="tag">MARS · RESILIENCE</span></button>
+     <button class="mission" data-mission="cave"><span class="icon">⌁</span><strong>Map a lava tube</strong><small>Explore an unlit cave, build a map, and avoid unstable ground and dead ends.</small><span class="tag">MARS · EXPLORATION</span></button>
+     <button class="mission" data-mission="sample"><span class="icon">⬡</span><strong>Sample-return convoy</strong><small>Coordinate scouts and carriers to collect samples and deliver them to a safe zone.</small><span class="tag">MARS · COORDINATION</span></button>
+    </div>
+   </section>
+   <section class="panel"><div class="panelhead"><h3>03 / Learning in progress</h3><span class="small">SIMULATED ONLINE POLICY UPDATE</span></div>
+    <div class="learning"><div class="learnheadline"><strong id="learnTitle">Adaptive navigation policy</strong><span id="learnState">LEARNING ACTIVE</span></div><div class="learnbar"><i id="learnProgress"></i></div><div class="learnstats"><div class="learnstat"><strong id="episodes">0</strong><small>DECISION EPISODES</small></div><div class="learnstat"><strong id="successRate">—</strong><small>RECENT SUCCESS</small></div><div class="learnstat"><strong id="policyScore">0.50</strong><small>POLICY CONFIDENCE</small></div></div><div class="explain" id="learnExplain">The policy starts with cautious defaults. Every completed move gets a simulated reward or penalty. Over time, each rover adjusts its exploration, caution, and energy-saving preferences. This is an illustrative online-learning heuristic, not a trained neural network.</div></div>
+   </section>
+  </div>
+  <div class="stack rightstack">
+   <section class="panel"><div class="panelhead"><h3>04 / Mission status</h3><span class="small" id="missionState">AUTONOMOUS</span></div><div class="stats"><div class="stat"><div class="n" id="statProgress">0%</div><div class="l">OBJECTIVE</div><div class="trend" id="progressNote">Mission initializing</div></div><div class="stat"><div class="n" id="statEnergy">92%</div><div class="l">AVG ENERGY</div><div class="trend">Fleet reserve</div></div><div class="stat"><div class="n" id="statFinds">0</div><div class="l">SCIENCE FINDS</div><div class="trend">Verified targets</div></div><div class="stat"><div class="n" id="statRisks">0</div><div class="l">RISK EVENTS</div><div class="trend">Avoided + encountered</div></div></div></section>
+   <section class="panel"><div class="panelhead"><h3>05 / Fleet telemetry</h3><span class="small" id="fleetLink">4 UNITS · 4 ACTIVE</span></div><div class="roverlist" id="roverList"></div></section>
+   <section class="panel"><div class="panelhead"><h3>06 / Command console</h3><span class="small">OVERRIDE / TEST</span></div><div class="controls">
+    <div class="controlrow"><button id="pause" class="primary">Ⅱ Pause</button><label class="small">Speed <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4">4×</option><option value="8">8×</option></select></label></div>
+    <div class="controlrow"><button id="fault" class="warn">⚡ Inject a fault</button><button id="storm" class="warn">☄ Trigger hazard</button></div>
+    <div class="controlgrid">
+     <div class="field"><label>Difficulty <output id="difficultyOut">STANDARD</output></label><select class="selectwide" id="difficulty"><option value="easy">Training wheels</option><option value="standard" selected>Standard</option><option value="hard">Deep-space hard</option></select></div>
+     <div class="field"><label>Communication delay <output id="delayOut">8 ticks</output></label><input id="delay" type="range" min="1" max="30" value="8"></div>
+     <div class="field"><label>Sensor uncertainty <output id="noiseOut">16%</output></label><input id="noise" type="range" min="0" max="55" value="16"></div>
+     <div class="field"><label>Energy conservatism <output id="energyOut">55</output></label><input id="energy" type="range" min="15" max="90" value="55"></div>
+    </div>
+   </div></section>
+  </div>
+ </div>
+ <div class="bottomgrid">
+  <section class="panel"><div class="panelhead"><h3>07 / Autonomy decision trace</h3><span class="small">WHY THE ROBOT DID THAT</span></div><div class="log" id="decisionLog" aria-live="polite"></div></section>
+  <section class="panel"><div class="panelhead"><h3>08 / System events</h3><button id="clearLog">Clear log</button></div><div class="log" id="eventLog" aria-live="polite"></div></section>
+ </div>
+ <div class="footer"><span>ORBITAL LAB · INTERACTIVE CONCEPT SIMULATION</span><span>All physics, sensing, learning and mission outcomes are simulated locally in your browser.</span></div>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),canvas=$('map'),ctx=canvas.getContext('2d');
+const W=1000,H=740,C=25,R=18,CW=W/C,CH=H/R;
+const palette=['#8df0ce','#79c9ff','#f4c978','#c0a8ff'];
+const missionInfo={
+ ice:{world:'MOON · SOUTH POLAR REGION',label:'SHACKLETON CRATER · POLAR SHADOW',weather:'VACUUM · CRYOGENIC SHADOWS',phase:'SUN ANGLE 3.2°',goal:'Find ice + return samples',type:'ice'},
+ storm:{world:'MARS · ARCADIA PLANITIA',label:'ARCADIA OUTPOST · DUST FRONT',weather:'DUST STORM · SOLAR ATTENUATION',phase:'LOCAL TIME 16:42',goal:'Secure outpost + preserve energy',type:'storm'},
+ cave:{world:'MARS · THARSIS REGION',label:'LAVA TUBE 04 · NO DIRECT SUNLIGHT',weather:'DARK · ROCKFALL RISK',phase:'SUBSURFACE · NO GPS',goal:'Map cave + find safe exit',type:'cave'},
+ sample:{world:'MARS · JEZERO CRATER',label:'JEZERO DELTA · SAMPLE CORRIDOR',weather:'THIN ATMOSPHERE · DUST HAZE',phase:'LOCAL TIME 14:20',goal:'Collect and deliver samples',type:'sample'}
+};
+let mission='ice',running=true,tick=0,elapsed=0,acc=0,lastFrame=0,overlay=false,events=0,finds=0,risks=0,episodes=0,recent=[],messages=[],terrain=[],robots=[],objective=0,stormLevel=0,completed=false;
+let mapConfidence=.61;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),rand=(a,b)=>a+Math.random()*(b-a),dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function log(target,msg,type=''){const el=document.createElement('div');el.className='logitem '+type;el.innerHTML='<span class="time">T+'+String(tick).padStart(4,'0')+'</span>'+msg;$(target).prepend(el);while($(target).children.length>45)$(target).lastChild.remove()}
+function makeWorld(){
+ terrain=[];
+ for(let y=0;y<R;y++)for(let x=0;x<C;x++){
+  const n=Math.sin(x*.63+y*.22)*.5+Math.cos(y*.52-x*.31)*.35+Math.sin((x+y)*.17)*.15;
+  let crater=Math.hypot((x-7)*.8,y-7),craterB=Math.hypot(x-18,(y-12)*.9);
+  let shadow=mission==='ice'?(crater<5||craterB<4.5):mission==='cave'?(x>5&&x<21&&y>4&&y<14):false;
+  let ridge=(Math.abs(crater-5)<1||Math.abs(craterB-4.5)<.8||n>.65);
+  let hazard=Math.random()<(mission==='storm'?.065:.045)||(mission==='cave'&&Math.random()<.04);
+  let resource=mission==='ice'?(shadow&&Math.random()<.2):mission==='storm'?(Math.random()<.035):mission==='cave'?(Math.random()<.09):Math.random()<.1;
+  let target=mission==='cave'?Math.random()<.07:mission==='storm'?Math.random()<.04:Math.random()<.055;
+  terrain.push({x,y,n,shadow,ridge,hazard,resource,target,visited:0,known:false,kind:Math.random()<.6?'rock':'regolith'});
+ }
+ // Clear a safe landing/base area.
+ for(let y=8;y<11;y++)for(let x=11;x<14;x++){let t=terrain[y*C+x];t.hazard=false;t.shadow=false;t.ridge=false}
+ // Place guaranteed, visible mission waypoints so every scenario has concrete work to do.
+ // Coordinates are cell centers; hazards are cleared at objective sites, not across the whole route.
+ const objectives={
+  ice:[[5,5],[8,9],[17,11],[20,14]],
+  storm:[[4,4],[20,4],[5,14],[20,14]],
+  cave:[[6,6],[10,8],[14,9],[18,11],[21,9]],
+  sample:[[4,5],[20,5],[5,14],[19,14]]
+ }[mission];
+ objectives.forEach(([x,y])=>{const t=terrain[y*C+x];t.target=true;t.hazard=false;t.resource=mission==='ice'||mission==='sample';if(mission==='ice')t.shadow=true;t.kind='mission-waypoint'});
+}
+function tile(x,y){return terrain[clamp(Math.floor(y),0,R-1)*C+clamp(Math.floor(x),0,C-1)]}
+function resetFleet(){
+ robots=[];finds=0;risks=0;objective=0;episodes=0;recent=[];messages=[];events=0;stormLevel=0;completed=false;tick=0;elapsed=0;mapConfidence=.61;
+ for(let i=0;i<4;i++)robots.push({id:i+1,x:11.7+(i%2)*.7,y:8.7+Math.floor(i/2)*.6,home:{x:12.2,y:9.2},battery:rand(84,100),temp:mission==='ice'?rand(-170,-120):rand(-15,8),health:100,sensor:100,drive:100,dust:rand(2,9),mode:'scout',target:null,trail:[],found:0,carried:0,delivered:0,stale:0,mem:0,policy:{explore:.52,hazard:.72,save:.55},score:.5,last:'Systems online. Awaiting autonomous task allocation.',decision:'Mapping landing zone',lastEpisode:0,alive:true,avoid:0});
+ $('decisionLog').innerHTML='';$('eventLog').innerHTML='';
+ log('eventLog','Mission initialized. Four robots booted, checked sensors, and created local maps.');
+ log('eventLog','Terrain generated with hidden targets, hazards, shadow zones and restricted-power regions.');
+ log('decisionLog','Fleet policy initialized with cautious exploration, hazard avoidance and energy reserve weights.');
+ log('decisionLog','Robots will continue on local plans during communication gaps; base messages arrive after a simulated delay.');
+}
+function nearestTarget(r){
+ let best=null,bs=-1e9;
+ terrain.forEach(t=>{if(!t.target||t.visited>0||robots.some(q=>q.id!==r.id&&q.mode==='target'&&q.target&&Math.floor(q.target.x)===t.x&&Math.floor(q.target.y)===t.y))return;let d=Math.hypot(t.x+.5-r.x,t.y+.5-r.y);let riskNear=terrain.filter(q=>q.hazard&&Math.hypot(q.x-t.x,q.y-t.y)<2).length;let s=1/(d+.8)+r.policy.explore*.25-riskNear*r.policy.hazard*.06+Math.random()*.1;if(s>bs){bs=s;best=t}});
+ return best;
+}
+function nearestSafe(r){let best=null,bs=1e9;terrain.forEach(t=>{if(t.hazard)return;let d=Math.hypot(t.x+.5-r.x,t.y+.5-r.y);let s=d+(t.shadow&&mission==='ice'?1.3:0)+(t.ridge?.1:0);if(s<bs){bs=s;best=t}});return best}
+function updatePolicy(r,reward,why){
+ episodes++;r.lastEpisode=episodes;r.score=clamp(r.score*.94+(reward>0?.06:.015),.1,.99);
+ r.policy.explore=clamp(r.policy.explore+(reward>0?.008:-.004),.18,.9);
+ r.policy.hazard=clamp(r.policy.hazard+(reward<0?.025:-.002),.25,.98);
+ r.policy.save=clamp(r.policy.save+(r.battery<35?.02:reward>0?-.001:.004),.2,.95);
+ recent.push(reward);if(recent.length>40)recent.shift();
+ log('decisionLog','R'+r.id+' updated its policy: '+why+' <span style="color:var(--mint)">[reward '+(reward>0?'+':'')+reward.toFixed(2)+']</span>');
+}
+function decide(r){
+ if(!r.alive)return;
+ const energyThreshold=Number($('energy').value);
+ if(r.battery<energyThreshold||r.drive<25){r.mode='return';r.target={x:r.home.x,y:r.home.y};r.last='Energy reserve or mobility margin crossed. Returning now protects the robot and any onboard science.';r.decision='Return to safe zone';return}
+ if((mission==='ice'||mission==='sample')&&r.carried>0&&r.battery<70){r.mode='return';r.target={x:r.home.x,y:r.home.y};r.last='Sample secured; current energy margin makes delivery safer than another excursion.';r.decision='Deliver sample';return}
+ if(mission==='storm'&&stormLevel>.45&&r.battery<75){r.mode='shelter';let t=nearestSafe(r);r.target=t?{x:t.x+.5,y:t.y+.5}:r.home;r.last='Dust opacity is cutting solar input. Moving to a sheltered low-risk position and reducing power use.';r.decision='Seek storm shelter';return}
+ let target=nearestTarget(r);
+ if(target){r.mode='target';r.target={x:target.x+.5,y:target.y+.5};r.decision=mission==='ice'?'Investigate ice deposit':mission==='storm'?'Service outpost checkpoint':mission==='cave'?'Survey cave waypoint':'Collect geological sample';r.last='Mission planner selected a required objective using distance, energy reserve, and local hazard information.'}
+ else {
+  let options=terrain.filter(t=>!t.hazard&&t.visited<2);let t=options[Math.floor(Math.random()*options.length)];
+  r.mode='scout';r.target=t?{x:t.x+.5,y:t.y+.5}:r.home;r.decision='Expand local map';r.last='No high-confidence target nearby. Exploring a safe, poorly mapped cell to improve future decisions.';
+ }
+ if(r.stale>Number($('delay').value)){r.last+=' Base data is stale; acting on onboard state rather than waiting for a command.'}
+}
+function sendMessage(r,text){messages.push({at:tick+Number($('delay').value)+Math.floor(rand(0,4)),id:r.id,text})}
+function sensorRead(r){
+ let noise=Number($('noise').value)/100;
+ r.sensor=Math.max(5,r.sensor-(Math.random()<noise*.13?rand(1,5):0)+.04);
+ const t=tile(r.x,r.y);r.glare=mission==='ice'&&!t.shadow&&Math.random()<.14;
+ r.lidarDown=Math.random()<noise*.08||r.sensor<18;
+ r.sensedHazard=false;
+ for(const q of terrain){if(Math.hypot(q.x+.5-r.x,q.y+.5-r.y)<1.3&&q.hazard&&!r.lidarDown&&Math.random()>noise*.7)r.sensedHazard=true}
+}
+function stepRobot(r){
+ if(!r.alive||completed)return;
+ const here=tile(r.x,r.y);sensorRead(r);r.stale++;
+ const daylight=(Math.sin((tick%180)/180*Math.PI*2)+1)/2;
+ let solar=mission==='cave'?.005:here.shadow?.004:(.06+daylight*.25)*(1-r.dust/130)*(1-stormLevel*.75);
+ r.battery=clamp(r.battery+solar,0,100);
+ const targetTemp=mission==='ice'?(here.shadow?-215:-90):mission==='cave'?-35:(here.shadow?-65:15);
+ r.temp+=(targetTemp-r.temp)*.015;
+ let thermal=clamp(1-Math.max(0,Math.abs(r.temp+35)-130)*.0022,.4,1);
+ r.drive=clamp(100-Math.max(0,-r.temp-180)*.7-r.mem*7,15,100);
+ if(r.battery<=0.2){r.alive=false;r.decision='Safe mode — energy depleted';risks++;log('eventLog','R'+r.id+' stopped moving after battery depletion. Recovery would require a rescue mission.','danger');return}
+ if(!r.target||Math.random()<.025)decide(r);
+ if(!r.target)return;
+ const d=dist(r,r.target);
+ if(d<.58){
+  if(r.mode==='return'&&Math.hypot(r.x-r.home.x,r.y-r.home.y)<1.25){
+   if(r.carried>0){const delivered=r.carried;r.carried=0;r.delivered+=delivered;objective=clamp(objective+delivered*25,0,100);log('eventLog','R'+r.id+' delivered '+delivered+' sample(s) to the safe zone. Science payload secured.');updatePolicy(r,1,'a sample was returned successfully; the energy-aware return strategy was reinforced.');}
+   r.mode='scout';r.target=null;r.decision='Resume autonomous survey';r.last='Returned safely. Recharging and selecting the next high-value task from the local map.';decide(r);return;
+  }
+  // Resolve arrival against the assigned waypoint, not the rover's rounded
+  // current cell. The rover can enter the arrival radius from an adjacent cell.
+  const t = r.mode === 'target' && r.target
+    ? tile(r.target.x, r.target.y)
+    : tile(r.x, r.y);
+  t.known=true;t.visited++;
+  if(r.mode==='target'&&t.target&&!t.hazard){
+   t.target=false;t.resource=true;t.known=true;r.found++;finds++;
+   updatePolicy(r,1,'a required mission waypoint was completed; the successful task strategy was reinforced.');
+   sendMessage(r,mission==='storm'?'outpost checkpoint serviced':mission==='cave'?'cave map segment uploaded':'science target data uploaded');
+   if(mission==='ice'||mission==='sample'){
+    r.carried++;r.battery-=mission==='ice'?4:2;objective=clamp(objective+8,0,100);
+    r.mode='return';r.target={x:r.home.x,y:r.home.y};r.decision='Deliver sample to base';r.last='Mission sample secured. Returning to base to deliver the payload before another excursion.';
+    log('eventLog','R'+r.id+' collected a geological sample. Next task: return it to the base.');
+   }else if(mission==='storm'){
+    objective=clamp(objective+25,0,100);r.battery-=1;r.target=null;r.decision='Checkpoint serviced';r.last='Outpost checkpoint serviced. Selecting the next required station autonomously.';
+    log('eventLog','R'+r.id+' completed an outpost service checkpoint. Fleet objective advanced.');decide(r);
+   }else{
+    objective=clamp(objective+20,0,100);r.target=null;r.decision='Cave segment mapped';r.last='Cave segment surveyed and added to the local map. Selecting the next unexplored waypoint.';
+    log('eventLog','R'+r.id+' mapped a cave waypoint. New map data queued for delayed transmission.');decide(r);
+   }
+  }else{
+   updatePolicy(r,t.hazard?-.8:.12,t.hazard?'a hazard was encountered; increasing caution for similar routes.':'safe traversal added map coverage; exploration remains useful.');
+   if(t.hazard){r.battery-=7;r.health=clamp(r.health-15,5,100);risks++;r.policy.hazard=clamp(r.policy.hazard+.05,.25,.98);log('eventLog','R'+r.id+' encountered an obscured hazard; drive and sensor health reduced.','warn')}
+   r.target=null;decide(r);
+  }
+  return;
+ }
+ let dx=(r.target.x-r.x)/(d||1),dy=(r.target.y-r.y)/(d||1),hazardStrength=0,ax=0,ay=0;
+ for(const t of terrain){let dd=Math.hypot(t.x+.5-r.x,t.y+.5-r.y);if(t.hazard&&dd<1.65){hazardStrength+=1/(dd+.15);ax+=(r.x-t.x-.5)/(dd+.15);ay+=(r.y-t.y-.5)/(dd+.15)}}
+ if(hazardStrength>0&&!r.lidarDown){let blend=clamp(hazardStrength*r.policy.hazard*.4,0,.85);dx=dx*(1-blend)+ax*blend;dy=dy*(1-blend)+ay*blend;let norm=Math.hypot(dx,dy)||1;dx/=norm;dy/=norm;if(!r.avoid){r.avoid=1;risks++;log('decisionLog','R'+r.id+' rerouted around a hazard using local lidar; no human command required.','warn')}}else r.avoid=0;
+ let pace=.12*(r.drive/100)*thermal*(r.battery<25?.72:1);
+ let nx=clamp(r.x+dx*pace,.25,C-.25),ny=clamp(r.y+dy*pace,.25,R-.25),nt=tile(nx,ny);
+ if(nt.hazard&&Math.random()<(r.lidarDown?.38:.07)){r.health=clamp(r.health-9,5,100);r.battery-=3;risks++;updatePolicy(r,-.6,'sensor uncertainty led to a risky step; hazard aversion increased.');log('eventLog','R'+r.id+' made contact with a concealed obstacle. The policy penalized the action.','danger')}
+ r.x=nx;r.y=ny;r.trail.push([nx,ny]);if(r.trail.length>180)r.trail.shift();
+ r.battery=clamp(r.battery-.035*(1+hazardStrength*.12)*(1+r.policy.save*.25),0,100);
+ r.dust=clamp(r.dust+(mission==='storm'?.04:.012),0,70);
+ if(r.stale>Number($('delay').value)*1.6&&Math.random()<.025)log('decisionLog','R'+r.id+' continued its mission during a communication gap using cached maps and local safety rules.');
+}
+function processMessages(){messages=messages.filter(m=>{if(m.at<=tick){let r=robots.find(x=>x.id===m.id);if(r)r.stale=0;log('eventLog','Base received delayed packet from R'+m.id+': '+m.text+'.');return false}return true})}
+function injectFault(){let r=robots[Math.floor(Math.random()*robots.length)],type=Math.floor(Math.random()*4);events++;
+ if(type===0){r.sensor=8;r.last='Lidar fault detected. The robot lowers speed and uses recent map memory.';log('eventLog','FAULT: R'+r.id+' lidar degraded. Local navigation is now less certain.','danger')}
+ if(type===1){r.drive=18;r.last='Drive actuator degraded; energy-aware retreat prioritized.';log('eventLog','FAULT: R'+r.id+' drive actuator damaged. Movement capability reduced.','danger')}
+ if(type===2){r.stale=Number($('delay').value)*4;r.last='Comms unavailable. Continuing with onboard autonomy.';log('eventLog','FAULT: R'+r.id+' relay link jammed. No live base guidance is available.','warn')}
+ if(type===3){r.mem++;r.policy.explore=clamp(r.policy.explore+rand(-.2,.2),.1,.9);r.last='Memory corruption suspected. Re-checking local plan against safety constraints.';log('eventLog','FAULT: R'+r.id+' memory bit flip changed a policy parameter; recovery monitor activated.','danger')}
+ log('decisionLog','R'+r.id+' diagnosed a subsystem fault and switched to a degraded autonomy mode. It will not wait for a human command.','warn');
+}
+function triggerHazard(){events++;if(mission==='storm'){stormLevel=clamp(stormLevel+.38,0,1);log('eventLog','DUST FRONT INTENSIFIED. Solar input and visibility dropped across the field.','danger');$('weatherTag').textContent='DUST FRONT · VISIBILITY FALLING'}
+ else {let t=terrain[Math.floor(rand(0,terrain.length))];t.hazard=true;t.target=false;log('eventLog','NEW HAZARD: a terrain instability or radiation hotspot appeared. Local planners must route around it.','warn');}
+}
+function draw(){
+ ctx.clearRect(0,0,W,H);ctx.fillStyle='#0b131a';ctx.fillRect(0,0,W,H);
+ terrain.forEach(t=>{
+  const x=t.x*CW,y=t.y*CH;
+  let base=mission==='ice'?(t.shadow?'#111f2b':t.ridge?'#56534b':'#30363a'):mission==='cave'?(t.shadow?'#131d25':t.ridge?'#3c4a4a':'#25343a'):(t.ridge?'#635c4b':'#343d3e');
+  if(mission==='storm')base=t.ridge?'#5b5548':'#3d3b36';
+  ctx.fillStyle=base;ctx.fillRect(x,y,CW+1,CH+1);
+  let shade=(Math.sin(t.x*1.9+t.y*2.7)+1)*.05;
+  ctx.fillStyle=`rgba(150,180,170,${shade})`;ctx.fillRect(x+3,y+3,CW-6,CH-6);
+  if(t.shadow){ctx.fillStyle='rgba(2,10,20,.32)';ctx.fillRect(x,y,CW,CH)}
+  if(t.ridge){ctx.fillStyle='rgba(244,201,120,.17)';ctx.fillRect(x,y,CW,CH);ctx.strokeStyle='#9e8d6c55';ctx.beginPath();ctx.moveTo(x+2,y+CH*.75);ctx.lineTo(x+CW*.8,y+CH*.2);ctx.stroke()}
+  if(t.hazard){ctx.fillStyle='#ff7f87';ctx.beginPath();ctx.moveTo(x+CW*.5,y+CH*.15);ctx.lineTo(x+CW*.83,y+CH*.8);ctx.lineTo(x+CW*.17,y+CH*.8);ctx.closePath();ctx.fill()}
+  else if(t.kind==='rock'&&Math.random()<0.00001){ctx.fillStyle='#87969a';ctx.beginPath();ctx.arc(x+CW*.5,y+CH*.5,3,0,7);ctx.fill()}
+  if(t.resource&&t.known){ctx.fillStyle='#f4c978';ctx.beginPath();ctx.arc(x+CW*.5,y+CH*.5,4,0,7);ctx.fill()}
+  if(t.target){ctx.strokeStyle=overlay?'#9ee8ffbb':'#9ee8ff55';ctx.lineWidth=overlay?2:1;ctx.beginPath();ctx.arc(x+CW*.5,y+CH*.5,overlay?6:3,0,7);ctx.stroke()}
+  if(t.visited>0){ctx.fillStyle='rgba(141,240,206,.07)';ctx.fillRect(x,y,CW,CH)}
+ });
+ // geological formations / crater rings
+ if(mission==='ice'||mission==='sample'){[[7,7,4.7],[18,12,4.1]].forEach(c=>{ctx.strokeStyle='#b5c2c155';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse((c[0]+.5)*CW,(c[1]+.5)*CH,c[2]*CW,c[2]*CH*.86,0,0,Math.PI*2);ctx.stroke();ctx.strokeStyle='#02080d88';ctx.lineWidth=8;ctx.beginPath();ctx.ellipse((c[0]+.5)*CW,(c[1]+.5)*CH,c[2]*CW*.78,c[2]*CH*.65,0,0,Math.PI*2);ctx.stroke()})}
+ if(mission==='cave'){ctx.strokeStyle='#789399';ctx.lineWidth=13;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(5*CW,7*CH);ctx.bezierCurveTo(8*CW,4*CH,10*CW,12*CH,14*CW,8*CH);ctx.bezierCurveTo(17*CW,5*CH,19*CW,13*CH,22*CW,10*CH);ctx.stroke();ctx.strokeStyle='#111b22';ctx.lineWidth=8;ctx.stroke()}
+ // base and routes
+ let bx=12.2*CW,by=9.2*CH;ctx.strokeStyle='#8df0ce';ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx,by,18+Math.sin(tick*.08)*2,0,7);ctx.stroke();ctx.fillStyle='#d5fff1';ctx.fillRect(bx-5,by-5,10,10);ctx.fillStyle='#a9c6c9';ctx.font='12px system-ui';ctx.fillText(mission==='storm'?'HABITAT / SAFE ZONE':'FIELD RELAY',bx+15,by-10);
+ robots.forEach(r=>{
+  if(r.trail.length>1){ctx.strokeStyle=palette[r.id-1]+'65';ctx.lineWidth=2;ctx.beginPath();r.trail.forEach((p,i)=>i?ctx.lineTo(p[0]*CW,p[1]*CH):ctx.moveTo(p[0]*CW,p[1]*CH));ctx.stroke()}
+  if(r.target){ctx.strokeStyle=r.stale>Number($('delay').value)?'#f4c97855':palette[r.id-1]+'55';ctx.setLineDash([5,5]);ctx.beginPath();ctx.moveTo(r.x*CW,r.y*CH);ctx.lineTo(r.target.x*CW,r.target.y*CH);ctx.stroke();ctx.setLineDash([])}
+  ctx.strokeStyle=r.stale>Number($('delay').value)?'#f4c97888':'#8df0ce44';ctx.setLineDash(r.stale>Number($('delay').value)?[4,6]:[]);ctx.beginPath();ctx.moveTo(r.x*CW,r.y*CH);ctx.lineTo(bx,by);ctx.stroke();ctx.setLineDash([]);
+  ctx.save();ctx.translate(r.x*CW,r.y*CH);ctx.rotate(Math.atan2((r.target?.y??r.y)-r.y,(r.target?.x??r.x)-r.x));ctx.fillStyle=r.alive?palette[r.id-1]:'#ff7f87';ctx.strokeStyle='#061014';ctx.lineWidth=3;ctx.beginPath();ctx.roundRect(-10,-7,20,14,4);ctx.fill();ctx.stroke();ctx.fillStyle='#0c2526';ctx.fillRect(-4,-4,8,8);ctx.fillStyle='#e7fff8';ctx.fillRect(-2,-2,4,4);ctx.restore();
+  ctx.fillStyle='#dce9e8';ctx.font='10px system-ui';ctx.fillText('R'+r.id,r.x*CW+12,r.y*CH-10);
+ });
+ if(mission==='storm'&&stormLevel>0){ctx.fillStyle=`rgba(180,157,113,${stormLevel*.23})`;ctx.fillRect(0,0,W,H)}
+ if(overlay){ctx.fillStyle='#9ee8ff';ctx.font='10px monospace';terrain.forEach(t=>{if(Math.random()<.15)ctx.fillText(Math.round(clamp(65+Math.random()*35-Number($('noise').value),0,100))+'%',t.x*CW+5,t.y*CH+12)})}
+}
+function roverCard(r){
+ const b=(name,v)=>`<div class="barrow"><span>${name}</span><div class="bar"><i style="width:${clamp(v,0,100)}%;background:${v<25?'var(--red)':v<50?'var(--gold)':'var(--mint)'}"></i></div><span>${Math.round(v)}%</span></div>`;
+ let status=!r.alive?'OFFLINE':r.drive<30||r.sensor<20?'DEGRADED':r.stale>Number($('delay').value)?'LINK DELAY':r.mode.toUpperCase();
+ let badge=status==='OFFLINE'?'bad':status==='DEGRADED'||status==='LINK DELAY'?'warn':'';
+ return `<article class="rover"><div class="rovertop"><span class="rname" style="color:${palette[r.id-1]}">UNIT ${String(r.id).padStart(2,'0')} <span style="color:var(--muted);font-weight:400">/ ${['SCOUT','GEOLOGIST','PATHFINDER','CARRIER'][r.id-1]}</span></span><span class="badge ${badge}">${status}</span></div><div class="roverbody"><div class="rovervisual"><div class="bot"><div class="eye"></div></div></div><div class="roverread">${b('ENERGY',r.battery)}${b('SENSORS',r.sensor)}${b('DRIVE',r.drive)}${b('DUST',100-r.dust)}</div></div><div class="roverdecision"><b>NOW:</b> ${r.decision}<br><span style="color:var(--muted)">${r.last}</span></div></article>`
+}
+function ui(){
+ $('missionClock').textContent='MISSION ELAPSED '+String(Math.floor(tick/60)).padStart(2,'0')+':'+String(tick%60).padStart(2,'0');
+ $('worldChip').textContent='WORLD · '+missionInfo[mission].world.split(' · ')[0];$('mapLabel').textContent=missionInfo[mission].label;$('weatherTag').textContent=missionInfo[mission].weather;$('phaseTag').textContent=missionInfo[mission].phase;
+ $('linkTag').textContent=robots.some(r=>r.stale>Number($('delay').value))?'RELAY LINK · DEGRADED':'RELAY LINK · NOMINAL';
+ $('mapStatus').textContent='MAP CONFIDENCE '+Math.round(mapConfidence*100)+'%';
+ $('statProgress').textContent=Math.round(objective)+'%';$('progressNote').textContent=completed?'Mission objective reached':missionInfo[mission].goal;
+ $('statEnergy').textContent=Math.round(robots.reduce((s,r)=>s+r.battery,0)/robots.length)+'%';$('statFinds').textContent=finds;$('statRisks').textContent=risks;
+ $('fleetLink').textContent=robots.filter(r=>r.alive).length+' ACTIVE · '+messages.length+' PACKETS IN TRANSIT';
+ $('episodes').textContent=episodes;$('successRate').textContent=recent.length?Math.round(recent.filter(x=>x>0).length/recent.length*100)+'%':'—';
+ $('policyScore').textContent=(robots.reduce((s,r)=>s+r.score,0)/robots.length).toFixed(2);$('learnProgress').style.width=Math.min(100,episodes/1.8)+'%';
+ $('learnState').textContent=running?'LEARNING ACTIVE':'LEARNING PAUSED';$('difficultyOut').textContent=$('difficulty').value.toUpperCase();$('delayOut').textContent=$('delay').value+' ticks';$('noiseOut').textContent=$('noise').value+'%';$('energyOut').textContent=$('energy').value;
+ $('missionState').textContent=completed?'OBJECTIVE COMPLETE':'AUTONOMOUS';$('roverList').innerHTML=robots.map(roverCard).join('');
+}
+function step(){
+ tick++;stormLevel=Math.max(0,stormLevel-(mission==='storm'?.00035:.001));robots.forEach(stepRobot);processMessages();
+ // Progress is earned by completing explicit mission objectives, not by wandering or surviving alone.
+ if(mission==='ice'||mission==='sample')objective=clamp(objective,0,100);
+ if(tick%18===0){mapConfidence=clamp(mapConfidence+.003,0,.98);log('eventLog','Fleet status: '+robots.filter(r=>r.alive).length+' robots operational; '+messages.length+' delayed packets pending.')}
+ if(objective>=100&&!completed){completed=true;robots.forEach(r=>{if(r.alive){r.mode='standby';r.target=null;r.decision='Mission complete — standby';r.last='All required mission objectives are complete. Holding position and preserving energy.'}});log('eventLog','MISSION OBJECTIVE COMPLETE. All required mission tasks were completed.','');log('decisionLog','Mission controller confirms completion; fleet shifts to standby and preserves remaining energy.')}
+ draw();ui();
+}
+function chooseMission(m){
+ mission=m;document.querySelectorAll('.mission').forEach(b=>b.classList.toggle('active',b.dataset.mission===m));
+ makeWorld();resetFleet();$('worldChip').textContent='WORLD · '+missionInfo[m].world.split(' · ')[0];$('weatherTag').textContent=missionInfo[m].weather;$('phaseTag').textContent=missionInfo[m].phase;
+ log('eventLog','Mission loaded: '+missionInfo[m].goal+'. World geometry and target distribution regenerated.');draw();ui();
+}
+document.querySelectorAll('.mission').forEach(b=>b.addEventListener('click',()=>chooseMission(b.dataset.mission)));
+$('pause').onclick=()=>{running=!running;$('pause').textContent=running?'Ⅱ Pause':'▶ Resume';$('pause').classList.toggle('primary',running);ui()};
+$('speed').onchange=()=>{};$('reset').onclick=()=>{makeWorld();resetFleet();draw();ui()};
+$('fault').onclick=injectFault;$('storm').onclick=triggerHazard;$('clearLog').onclick=()=>$('eventLog').replaceChildren();
+$('mapToggle').onclick=()=>{overlay=!overlay;$('mapToggle').textContent=overlay?'Hide sensor overlay':'Sensor overlay';draw()};
+$('delay').oninput=()=>ui();$('noise').oninput=()=>ui();$('energy').oninput=()=>ui();
+$('difficulty').onchange=()=>{let v=$('difficulty').value;if(v==='easy'){$('noise').value=7;$('delay').value=4;$('energy').value=35}else if(v==='standard'){$('noise').value=16;$('delay').value=8;$('energy').value=55}else{$('noise').value=34;$('delay').value=22;$('energy').value=70}log('eventLog','Difficulty changed to '+v+'. Noise, communications delay and energy conservatism updated.');ui()};
+makeWorld();resetFleet();draw();ui();
+function frame(ts){if(!lastFrame)lastFrame=ts;let dt=Math.min(120,ts-lastFrame);lastFrame=ts;if(running){acc+=dt;let stepMs=170/Number($('speed').value);while(acc>=stepMs){step();acc-=stepMs}}requestAnimationFrame(frame)}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
